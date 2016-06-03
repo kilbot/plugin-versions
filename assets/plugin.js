@@ -13,9 +13,9 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
 
         if (versions.length == 0) return;
 
-        var $li = $('<li>', {
+        var $li = $('<div>', {
             'class': 'versions-select',
-            'html': '<div><select></select></div>'
+            'html': 'Version: <select></select>'
         });
         var $select = $li.find('select');
 
@@ -40,7 +40,8 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
             window.location.href = version.includeFilepath? (version.value + filePath) : version.value;
         });
 
-        $li.prependTo('.book-summary ul.summary');
+        // $li.prependTo('.book-summary ul.summary');
+        $li.appendTo('.faq-header .container');
     }
 
     // Fetch version from book.json (legacy plugin)
