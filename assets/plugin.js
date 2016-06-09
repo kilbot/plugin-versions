@@ -41,7 +41,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         });
 
         // $li.prependTo('.book-summary ul.summary');
-        $li.appendTo('.faq-header .container');
+        $li.appendTo(pluginConfig.container);
     }
 
     // Fetch version from book.json (legacy plugin)
@@ -56,6 +56,13 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     function fetchBookVersions(type) {
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (versions) {
             updateVersions($.map(versions, function(v) {
+                if(v.name === 'master') {
+                    return;
+                }
+                var endsWith = 'v/' + v.name + '/';
+                if(v.urls.website.slice(-endsWith.length) !== endsWith) {
+                    v.urls.website += endsWith;
+                }
                 return {
                     text: v.name,
                     value: v.urls.website,
