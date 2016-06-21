@@ -56,7 +56,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     function fetchBookVersions(type) {
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (versions) {
             updateVersions($.map(versions, function(v) {
-                if(v.name === 'master') {
+                if(v.name === 'master' || v.name === 'redirect') {
                     return;
                 }
                 var endsWith = 'v/' + v.name + '/';
