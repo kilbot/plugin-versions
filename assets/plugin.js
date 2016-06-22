@@ -54,6 +54,9 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
 
     // Fetch gitbook.com versions
     function fetchBookVersions(type) {
+        var languageLanding =window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
+debugger;
+        
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (versions) {
             updateVersions($.map(versions, function(v) {
                 if(v.name === 'master' || v.name === 'redirect') {
@@ -62,6 +65,10 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                 var endsWith = 'v/' + v.name + '/';
                 if(v.urls.website.slice(-endsWith.length) !== endsWith) {
                     v.urls.website += endsWith;
+                    if(languageLanding){
+debugger;
+                        // window.history.pushState('','', urlPath);
+                    }
                 }
                 return {
                     text: v.name,
