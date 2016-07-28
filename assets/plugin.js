@@ -67,18 +67,18 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
 
                     // redirect to correct version URL
                     if(languageLanding){
-                        var filePath = location.href.replace(gitbook.state.bookRoot, '');
+                        var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
                         var location = v.urls.website + filePath;
-                        if(history.pushState){
+                        if(window.history.pushState){
                             // update location bar
-                            history.pushState({}, "", location);
+                            window.history.pushState({}, "", location);
                             // reload DISQUS
-                            if(DISQUS) {
-                                DISQUS.reset({reload: true});
+                            if(window.DISQUS) {
+                                window.DISQUS.reset({reload: true});
                             }
                         } else {
                             // reload page
-                            location.href = location;
+                            window.location.href = location;
                         }
                     }
                 }
