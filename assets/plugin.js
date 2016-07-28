@@ -68,7 +68,18 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                     // redirect to correct version URL
                     if(languageLanding){
                         var filePath = location.href.replace(gitbook.state.bookRoot, '');
-                        window.location.href = v.urls.website + filePath;
+                        var location = v.urls.website + filePath;
+                        if(history.pushState){
+                            // update location bar
+                            history.pushState({}, "", location);
+                            // reload DISQUS
+                            if(DISQUS) {
+                                DISQUS.reset({reload: true});
+                            }
+                        } else {
+                            // reload page
+                            location.href = location;
+                        }
                     }
                 }
                 return {
