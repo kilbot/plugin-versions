@@ -37,7 +37,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
             var version = filtered[0];
 
             var filePath = location.href.replace(gitbook.state.bookRoot, '');
-            window.location.href = version.includeFilepath? (version.value + filePath) : version.value;
+            window.location.href = version.includeFilepath ? (version.value + filePath) : version.value;
         });
 
         // $li.prependTo('.book-summary ul.summary');
@@ -65,13 +65,13 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                 if(v.urls.website.slice(-endsWith.length) !== endsWith) {
                     v.urls.website += endsWith;
 
-                    // redirect to correct version URL
+                    // update location if language landing page
                     if(languageLanding){
                         var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
                         var location = v.urls.website + filePath;
-                        if(window.history.pushState){
+                        if(window.history.replaceState){
                             // update location bar
-                            window.history.pushState({}, "", location);
+                            window.history.replaceState({}, "", location);
                             // reload DISQUS
                             if(window.DISQUS) {
                                 window.DISQUS.reset({reload: true});
