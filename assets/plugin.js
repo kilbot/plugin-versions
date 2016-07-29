@@ -52,43 +52,49 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         });
     }
 
-    // Fetch gitbook.com versions
-    function fetchBookVersions(type) {
+    function mapBookVersions(versions){
         var languageLanding = window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
+        
+        return $.map(versions, function(v) {
+            if(v.name === 'master' || v.name === 'redirect') {
+                return;
+            }
+            var endsWith = 'v/' + v.name + '/';
+            if(v.urls.website.slice(-endsWith.length) !== endsWith) {
+                v.urls.website += endsWith;
 
-        $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (versions) {
-            updateVersions($.map(versions, function(v) {
-                if(v.name === 'master' || v.name === 'redirect') {
-                    return;
-                }
-                var endsWith = 'v/' + v.name + '/';
-                if(v.urls.website.slice(-endsWith.length) !== endsWith) {
-                    v.urls.website += endsWith;
-
-                    // update location if language landing page
-                    if(languageLanding){
-                        var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
-                        var location = v.urls.website + filePath;
-                        if(window.history.replaceState){
-                            // update location bar
-                            window.history.replaceState({}, "", location);
-                            // reload DISQUS
-                            if(window.DISQUS) {
-                                window.DISQUS.reset({reload: true});
-                            }
-                        } else {
-                            // reload page
-                            window.location.href = location;
+                // update location if language landing page
+                if(languageLanding){
+                    var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
+                    var location = v.urls.website + filePath;
+                    if(window.history.replaceState){
+                        // update location bar
+                        window.history.replaceState({}, "", location);
+                        // reload DISQUS
+                        if(window.DISQUS) {
+                            window.DISQUS.reset({reload: true});
                         }
+                    } else {
+                        // reload page
+                        window.location.href = location;
                     }
                 }
-                return {
-                    text: v.name,
-                    value: v.urls.website,
-                    selected: v.current,
-                    includeFilepath: pluginConfig.includeFilepath !== false && type !== 'languages'
-                };
-            }));
+            }
+            
+            return {
+                text: v.name,
+                value: v.urls.website,
+                selected: v.current,
+                includeFilepath: pluginConfig.includeFilepath !== false && type !== 'languages'
+            };
+        });
+    }
+    
+    // Fetch gitbook.com versions
+    function fetchBookVersions(type) {
+        $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (v) {
+            var versions = mapBookVersions(v);
+            updateVersions(versions);
         });
     }
 
