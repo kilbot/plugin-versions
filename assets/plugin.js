@@ -68,8 +68,13 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                     var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
                     var location = v.urls.website + filePath;
                     if(window.history.replaceState){
+                        
                         // update location bar
                         window.history.replaceState({}, "", location);
+                        
+                        // update gitbook.state.bookRoot
+                        gitbook.state.bookRoot = v.urls.website;
+                        
                         // reload DISQUS
                         if(window.DISQUS) {
                             window.DISQUS.reset({reload: true});
