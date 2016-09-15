@@ -61,7 +61,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     function mapBookVersions(versions, type){
         var languageLanding = window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
         
-        var array = $.map(versions, function(v) {
+        return $.map(versions, function(v) {
             // remove 'matser'
             if(v.name === 'master') {
                 return;
@@ -80,9 +80,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                 includeFilepath: pluginConfig.includeFilepath !== false && type !== 'languages'
             };
             
-        });
-        
-        return array.sort(sortVersionsByName);
+        }).sort(sortVersionsByName);
     }
     
     function updateDisqus(){
@@ -93,7 +91,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         
         // update DISQUS with version URL
         var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
-        var location = gitbook.state.bookRoot + '/v/' + defaultVersion + '/' + filePath;
+        var location = gitbook.state.bookRoot + 'v/' + defaultVersion + '/' + filePath;
         location = location.replace(/^http:\/\//i, 'https://');
         console.log('set DISQUS url', location);
         DISQUS.reset({
@@ -110,6 +108,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (v) {
             var versions = mapBookVersions(v, type);
             console.log('sorted versions', versions);
+            updateDisqus();
             updateVersions(versions);
         });
     }
@@ -121,8 +120,6 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         // Make sure we have a current book.json
         if (pluginConfig.gitbookConfigURL)  fetchBookOptionsVersions(pluginConfig.gitbookConfigURL);
         else fetchBookVersions(pluginConfig.type || 'branches');
-        
-        updateDisqus();
     });
 
     gitbook.events.bind('page.change', function () {
