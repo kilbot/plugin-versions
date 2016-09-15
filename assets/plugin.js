@@ -92,7 +92,8 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         // update DISQUS with version URL
         var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
         var location = gitbook.state.bookRoot + 'v/' + defaultVersion + '/' + filePath;
-        location = location.replace(/^http:\/\//i, 'https://');
+        location = location.replace(/^http:\/\//i, 'https://'); // force https
+        location = location.split("?")[0]; // remove query params
         console.log('set DISQUS url', location);
         DISQUS.reset({
             reload: true,
