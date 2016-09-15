@@ -1,7 +1,8 @@
 require(['gitbook', 'jQuery'], function (gitbook, $) {
     var versions = [],
         current  = undefined,
-        pluginConfig = {};
+        pluginConfig = {},
+        defaultVersion;
 
     // Update the select with a list of versions
     function updateVersions(_versions) {
@@ -51,40 +52,25 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
             updateVersions(options);
         });
     }
+    
+    // 
+    function sortVersionsByName(a, b){
+        a.name.toLowerCase() < b.name.toLowerCase(); 
+    }
 
     function mapBookVersions(versions, type){
         var languageLanding = window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
         
-        return $.map(versions, function(v) {
-            if(v.name === 'master' || v.name === 'redirect') {
+        var array = $.map(versions, function(v) {
+            // remove 'matser'
+            if(v.name === 'master') {
                 return;
             }
+            
+            // set defaultVersion
             var endsWith = 'v/' + v.name + '/';
             if(v.urls.website.slice(-endsWith.length) !== endsWith) {
-                v.urls.website += endsWith;
-
-                // update location if language landing page
-                if(languageLanding){
-                    var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
-                    var location = v.urls.website + filePath;
-                    location = location.replace(/^http:\/\//i, 'https://');
-                    if(window.history.replaceState){
-                        
-                        // update location bar
-                        window.history.replaceState({}, "", location);
-                        
-                        // update gitbook.state.bookRoot
-                        gitbook.state.bookRoot = v.urls.website;
-                        
-                        // reload DISQUS
-                        if(window.DISQUS) {
-                            window.DISQUS.reset({reload: true});
-                        }
-                    } else {
-                        // reload page
-                        window.location.href = location;
-                    }
-                }
+                defaultVersion = v.name;
             }
             
             return {
@@ -93,6 +79,29 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                 selected: v.current,
                 includeFilepath: pluginConfig.includeFilepath !== false && type !== 'languages'
             };
+            
+        });
+        
+        return array.sort(sortVersionsByName);
+    }
+    
+    function updateDisqus(){
+        var languageLanding = window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
+        if(!window.DISQUS || !languageLanding){
+            return; 
+        }
+        
+        // update DISQUS with version URL
+        var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
+        var location = gitbook.state.bookRoot + '/v/' + defaultVersion + '/' + filePath;
+        location = location.replace(/^http:\/\//i, 'https://');
+        console.log('set DISQUS url', location);
+        DISQUS.reset({
+            reload: true,
+            config: function () {  
+                this.page.identifier = location;  
+                this.page.url = location;
+            }
         });
     }
     
@@ -100,6 +109,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     function fetchBookVersions(type) {
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (v) {
             var versions = mapBookVersions(v, type);
+            console.log('sorted versions', versions);
             updateVersions(versions);
         });
     }
@@ -111,9 +121,12 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         // Make sure we have a current book.json
         if (pluginConfig.gitbookConfigURL)  fetchBookOptionsVersions(pluginConfig.gitbookConfigURL);
         else fetchBookVersions(pluginConfig.type || 'branches');
+        
+        updateDisqus();
     });
 
     gitbook.events.bind('page.change', function () {
+        updateDisqus();
         updateVersions();
     });
 });
