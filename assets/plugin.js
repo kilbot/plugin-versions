@@ -55,7 +55,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     
     // 
     function sortVersionsByName(a, b){
-        a.name.toLowerCase() < b.name.toLowerCase(); 
+        a.text.toLowerCase() < b.text.toLowerCase(); 
     }
 
     function mapBookVersions(versions, type){
