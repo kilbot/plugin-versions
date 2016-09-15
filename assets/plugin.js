@@ -85,7 +85,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     
     function updateDisqus(){
         var languageLanding = window.location.pathname != '/' && window.location.pathname.substring(0, 3) != '/v/';
-        if(!window.DISQUS || !languageLanding){
+        if(!gitbook.state.page.comments || !window.DISQUS || !languageLanding){
             return; 
         }
         
@@ -109,8 +109,8 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
         $.getJSON(gitbook.state.bookRoot+'gitbook/api/versions/'+type, function (v) {
             var versions = mapBookVersions(v, type);
             console.log('sorted versions', versions);
-            updateDisqus();
             updateVersions(versions);
+            updateDisqus();
         });
     }
 
@@ -124,7 +124,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
     });
 
     gitbook.events.bind('page.change', function () {
-        updateDisqus();
         updateVersions();
+        updateDisqus();
     });
 });
