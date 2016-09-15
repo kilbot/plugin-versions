@@ -67,6 +67,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
                 if(languageLanding){
                     var filePath = window.location.href.replace(gitbook.state.bookRoot, '');
                     var location = v.urls.website + filePath;
+                    location = location.replace(/^http:\/\//i, 'https://');
                     if(window.history.replaceState){
                         
                         // update location bar
@@ -88,7 +89,7 @@ require(['gitbook', 'jQuery'], function (gitbook, $) {
             
             return {
                 text: v.name,
-                value: v.urls.website,
+                value: v.urls.website.replace(/^http:\/\//i, 'https://'),
                 selected: v.current,
                 includeFilepath: pluginConfig.includeFilepath !== false && type !== 'languages'
             };
